@@ -1,0 +1,82 @@
+<?php
+$title = 'KMV Сайт Новостей' . (strlen($_COOKIE['search'])?" (результаты поиска)":"");
+$this->headTitle($title);
+$pagecnt = $GLOBALS['pagecount'];
+?>
+<style>
+    .ttho{
+        <?php
+        if( isset($_COOKIE['order']) ){
+            echo "background: url(/img/order_" . (($_COOKIE['order']<0)?"down":"up") . ".png) center right no-repeat lightyellow;";
+        }
+        ?>
+    }
+    .tth:hover, .ttho:hover{
+        background-color: lightgreen;
+        cursor: pointer;
+    }
+    tr:hover{
+        background-color: oldlace;
+        cursor: pointer;
+    }        
+    th{
+        background-color: lightyellow;
+        cursor: default;
+    }
+</style>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+<p>
+    <a href="<?php echo $this->url('news', array('action'=>'add'));?>">Добавить новость</a>
+</p>
+
+<script>
+function schg(el){ location.href = "<?php echo $this->url('news')?>?spos="+el.selectedIndex; }
+function scrt(el, cnt){
+    var ch, i;
+    for( i=0; i<cnt; i++ ){
+        ch = document.createElement("OPTION");
+        el.appendChild(ch);
+        ch.innerHTML = (i+1);
+    }
+    el.selectedIndex = <?php echo $_COOKIE['spos'] ?>;
+}
+</script>
+
+<form id=sform action="<?php echo $this->url('news')?>?spos=0" method="POST" style="position: fixed; right: 30px; top: 15px; z-index: 2000;">
+    <input type=text size=30 name="search" value="<?php echo htmlspecialchars($_COOKIE['search']) ?>" placeholder="Введите для поиска" title="Поиск проводится по заголовкам и текстам новостей"><input type=submit value="Поиск">
+    <?php if( strlen($_COOKIE['search']) ){ ?>
+    <input type=button value="Сброс" onclick="sform.children[0].value=''; sform.submit();" >
+    <?php } ?>
+</form>
+
+<center style="padding-bottom: 10px">Страница <select id=selup onchange="schg(this)"></select> из <?php echo $pagecnt ?></center>
+
+<table class="table">
+<tr>
+    <th class="tth<?php echo (abs($_COOKIE['order'])==1)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($_COOKIE['order']==1)?-1:(($_COOKIE['order']==-1)?0:1));?>'">Заголовок</th>
+    <th class="tth<?php echo (abs($_COOKIE['order'])==2)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($_COOKIE['order']==2)?-2:(($_COOKIE['order']==-2)?0:2));?>'">Дата</th>
+    <th>Короткий текст</th>
+    <th>&nbsp;</th>
+</tr>
+<?php foreach ($news as $val) : ?>
+<tr onclick="if((event.target || event.srcElement).tagName=='TD') location.href='<?php echo $this->url('news', array('action'=>'read', 'id' => $val->id)) ?>'">
+    <td><?php echo $this->escapeHtml($val->title);?></td>
+    <td><?php echo $this->escapeHtml($val->dt);?></td>
+    <td><?php preg_match('#([\p{Z}\r]*[^\r\p{Z}]*){0,30}#m', $val->text, $matches);
+              echo $this->escapeHtml($matches[0]);?></td>
+    <td>
+        <a href="<?php echo $this->url('news',
+            array('action'=>'edit', 'id' => $val->id));?>">Изменить</a>
+        <a href="<?php echo $this->url('news',
+            array('action'=>'delete', 'id' => $val->id));?>">Удалить</a>
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<center style="padding-top: 10px">Страница <select id=seldn onchange="schg(this)"></select> из <?php echo $pagecnt ?></center>
+
+<script>
+scrt(selup, <?php echo $pagecnt ?>); 
+scrt(seldn, <?php echo $pagecnt ?>); 
+</script>

@@ -1,0 +1,24 @@
+<?php
+
+$title = "Просмотр новости '" . $news->title . "'";
+$this->headTitle($title);
+$ccnt = count($coms);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+<span style="color: gray; font-size: smaller">Добавлена: <?php echo $news->dt; ?></span>
+<input type=button value='Назад' style="position: fixed; left: 5px; top: 55px;" onclick='window.history.back();'>
+<center><pre style="display: inline-block; width: 95%; background-color: #FEFFD9; text-align: justify; font-size: 12pt; padding: 10px; border: 2px solid gold; margin-top: 20px"><?php echo $this->escapeHtml($news->text); ?></pre></center>
+
+<h2>Комментарии к новости <?php echo ($cnt)?"($ccnt)":"отсутствуют" ?></h2>
+<?php
+$addcoms = '<a href="' . $this->url('news', array('action'=>'cadd', 'id'=>$news->id)) . '">Добавить комментарий к новости</a>';
+echo $addcoms;
+if( $ccnt ){
+    foreach($coms as $id => $val){
+    
+    }
+    echo $addcoms;
+}
+
+?>
+

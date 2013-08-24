@@ -1,0 +1,12 @@
+{
+    "name": "KMVPrograms/KMVNews",
+    "description": "News Site",
+    "keywords": [
+        "KMVPrograms",
+        "KMVNews"
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.2.*"
+    }
+}

@@ -1,0 +1,27 @@
+<?php
+
+$title = 'Редактирование новости';
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+
+<?php
+$form = $this->form;
+$form->setAttribute('action', $this->url(
+    'news',
+    array(
+        'action' => 'edit',
+        'id'     => $this->id,
+    )
+));
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formHidden($form->get('id'));
+echo "<LABEL>Название новости:</LABEL><br>";
+echo $this->formRow($form->get('title')) . "<br>";
+echo "<LABEL>Текст новости:</LABEL><br>";
+echo $this->formRow($form->get('text')) . "<br>";
+echo $this->formSubmit($form->get('submit'));
+echo "<input type=button value='Назад' style='margin-left:50px' onclick='window.history.back();' >";
+echo $this->form()->closeTag();
