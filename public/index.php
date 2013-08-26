@@ -14,8 +14,10 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
 // Setup autoloading
 require 'init_autoloader.php';
 
-error_reporting(E_ERROR);
-ini_set('display_errors', '1');
+if( getenv('APPLICATION_ENV') == 'development' ){
+	error_reporting(E_ERROR);
+	ini_set('display_errors', '1');
+}
 
 $auth = new AuthenticationService();
 $isAdmin = ($auth->getIdentity()===1);

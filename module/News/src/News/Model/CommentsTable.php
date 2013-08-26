@@ -48,18 +48,18 @@ class CommentsTable
 
     public function adoptPict($pict){
         $filecontent = file_get_contents($pict['tmp_name']);
-        echo "mystrlen=" . strlen($filecontent);
+        //echo "mystrlen=" . strlen($filecontent);
         $im = imagecreatefromstring($filecontent);
         if( !$im ) return null;
         $wth = imagesx($im); $hgt = imagesy($im);
-        echo "wth=$wth hgt=$hgt";
+        //echo "wth=$wth hgt=$hgt";
         if( $wth<=320 && $hgt<=240 ){
             imagedestroy($im);
             return $filecontent;
         }
         $k = ($wth/$hgt<320/240)?(240/$hgt):(320/$wth);
         $wth2 = $wth*$k; $hgt2 = $hgt*$k;
-        echo "k=$k wth2=$wth2 hgt2=$hgt2";
+        //echo "k=$k wth2=$wth2 hgt2=$hgt2";
         $im2 = imagecreatetruecolor($wth2, $hgt2);
         imagecopyresampled($im2, $im, 0, 0, 0, 0, $wth2, $hgt2, $wth, $hgt);
         $ret = null;

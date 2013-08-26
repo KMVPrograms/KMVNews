@@ -25,8 +25,8 @@ if( $id<=0 ){
     exit;
 }
 
-$db = require 'config\autoload\global.php';
-$db2 = require 'config\autoload\local.php';
+$db = require 'config/autoload/global.php';
+$db2 = require 'config/autoload/local.php';
 $configArray = array_merge($db['db'], $db2['db']);
 $adapter = new \Zend\Db\Adapter\Adapter($configArray);
 $res = $adapter->query("select pict from comments where id=$id".($isAdmin?"":" and status=1"), $adapter::QUERY_MODE_EXECUTE);

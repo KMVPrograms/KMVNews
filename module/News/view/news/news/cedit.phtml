@@ -20,15 +20,15 @@ echo "<LABEL>Имя пользователя:</LABEL><br>" . $this->formRow($for
 echo "<LABEL>Почта:</LABEL><br>" . $this->formRow($form->get('email')) . "<br>";
 echo "<LABEL>Изображение:</LABEL><br>" . $this->formRow($form->get('pict'));
 if( $form->get('ispict')->getValue()==1 ){
-    echo "<img id=picture src='/lpict.php?p=".$coms->id."'>";
+    echo "<a id=picture data-lightbox='lb".$coms->id."' title='Изображение к комментарию' href='/lpict.php?p=".$coms->id."'><img src='/lpict.php?p=".$coms->id."'></a>";
 }
 ?>
- <input type=button id=chbid onclick="news.pict.value=''; this.disabled = true; if(news.picture) news.picture.style.display='none'; news.pict.style.display='inline'; news.ispict.value='0'" value="Очистить"><br>
+ <input type=button id=chbid onclick="news.pict.value=''; this.disabled = true; if(picture) picture.style.display='none'; news.pict.style.display='inline'; news.ispict.value='0'" value="Очистить"><br>
 <script>
 news.pict.style.display = "inline";
-if( news.picture ) news.pict.style.display = "none";
+if( picture ) news.pict.style.display = "none";
 news.pict.onchange = function(){ news.chbid.disabled = false; }
-news.chbid.disabled = (news.pict.value=='' && (!news.picture || news.picture.style.display=="none"));
+news.chbid.disabled = (news.pict.value=='' && (!picture || picture.style.display=="none"));
 </script>
 <?php
 echo "<LABEL>Текст комментария:</LABEL><br>" . $this->formRow($form->get('text')) . "<br>";

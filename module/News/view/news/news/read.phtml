@@ -24,7 +24,7 @@ if( $ccnt ){
 <?php foreach($coms as $val){ ?>
 
 <tr>
-    <td><span style="font-weight: bold; font-size: 10pt;"><?php echo $this->escapeHtml($val->name) ?></span><br><span style="font-weight: bold; font-size: smaller; color: gray;"><?php echo $this->escapeHtml($val->dt) ?></span><?php if( $val->pict ) echo "<br><img src='/lpict.php?p=".$val->id."'>"?></td>
+    <td><span style="font-weight: bold; font-size: 10pt;"><?php echo $this->escapeHtml($val->name) ?></span><br><span style="font-weight: bold; font-size: smaller; color: gray;"><?php echo $this->escapeHtml($val->dt) ?></span><?php if( $val->pict ) echo "<br><a data-lightbox='lb".$val->id."' title='Изображение к комментарию' href='/lpict.php?p=".$val->id."'><img src='/lpict.php?p=".$val->id."'></a>"?></td>
     <td><pre style="font-size: 11pt;"><?php echo $this->escapeHtml($val->text) ?></pre></td>
 <?php if( $isAdmin ){ ?>
     <td>

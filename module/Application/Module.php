@@ -16,6 +16,14 @@ class Module
 {
     public function onBootstrap(MvcEvent $e)
     {
+	$translator = new \Zend\Mvc\I18n\Translator();//\Zend\I18n\Translator\Translator();
+	$translator->addTranslationFile(
+	    'phpArray',
+	    'data/language/Zend_Validate.php',
+	    'default',
+	    'ru_RU'
+	);
+	\Zend\Validator\AbstractValidator::setDefaultTranslator($translator);
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);

@@ -26,7 +26,7 @@ class NewsAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function authenticate()
     {
-        $admin = require('config\autoload\admin.local.php');
+        $admin = require('config/autoload/admin.local.php');
         if( $this->getIdentity()===$admin['username'] && $this->getCredential()===$admin['password'] ){
             return new Result(Result::SUCCESS, 1);
         }else{

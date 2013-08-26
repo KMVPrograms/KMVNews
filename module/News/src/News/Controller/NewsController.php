@@ -199,7 +199,6 @@ class NewsController extends AbstractActionController
                 //echo $this->_helper->url('news', array('action' => 'read', 'id' => $mass['news']->id));
                 return $this->redirect()->toRoute('news', array('action' => 'read', 'id' => $mass['news']->id));
             }   
-            $coms->id = $id;
         }
 
         $mass['form'] = $form;
@@ -290,6 +289,7 @@ class NewsController extends AbstractActionController
         $form = new AdminForm();
 
         $request = $this->getRequest();
+        $mass['failed'] = 0;
         if ($request->isPost()) {
             $form->setData($request->getPost());
 

@@ -19,6 +19,7 @@ class Comments implements InputFilterAwareInterface
     public $pict;
     public $nid;
     public $status;
+    protected $inputFilter;
 
     public function exchangeArray($data)
     {
