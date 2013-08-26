@@ -1,5 +1,5 @@
 <?php
-$title = "Добавить комментарий к новости '" . $news->title . "'";
+$title = "Измение комментария к новости '" . $news->title . "'";
 $this->headTitle($title);
 ?>
 <h1><?php echo $this->escapeHtml($title); ?></h1>
@@ -7,28 +7,32 @@ $this->headTitle($title);
 $form->setAttribute('action', $this->url(
     'news',
     array(
-        'action' => 'cadd',
+        'action' => 'cedit',
         'id'     => $news->id,
+        'cid'     => $coms->id,
     )
 ));
 $form->prepare();
 
 echo $this->form()->openTag($form);
+echo $this->formHidden($form->get('ispict'));
 echo "<LABEL>Имя пользователя:</LABEL><br>" . $this->formRow($form->get('name')) . "<br>";
 echo "<LABEL>Почта:</LABEL><br>" . $this->formRow($form->get('email')) . "<br>";
 echo "<LABEL>Изображение:</LABEL><br>" . $this->formRow($form->get('pict'));
+if( $form->get('ispict')->getValue()==1 ){
+    echo "<img id=picture src='/img/pict0.png'>";
+}
 ?>
- <input type=button id=chbid onclick="document.getElementsByName('pict')[0].value=''; this.disabled = true;" value="Очистить"><br>
+ <input type=button id=chbid onclick="news.pict.value=''; this.disabled = true; if(news.picture) news.picture.style.display='none'; news.pict.style.display='inline'; news.ispict.value='0'" value="Очистить"><br>
 <script>
 news.pict.style.display = "inline";
+if( news.picture ) news.pict.style.display = "none";
 news.pict.onchange = function(){ news.chbid.disabled = false; }
-news.chbid.disabled = (news.pict.value==''); 
+news.chbid.disabled = (news.pict.value=='' && (!news.picture || news.picture.style.display=="none"));
 </script>
 <?php
 echo "<LABEL>Текст комментария:</LABEL><br>" . $this->formRow($form->get('text')) . "<br>";
-if( $GLOBALS['isAdmin'] ){
-    echo "<br>" . $this->formRow($form->get('status')) . " Доступен для просмотра гостями<br><br>";
-}
+echo "<br>" . $this->formRow($form->get('status')) . " Доступен для просмотра гостями<br><br>";
 echo $this->formSubmit($form->get('submit'));
 echo "<input type=button value='Назад' style='margin-left:50px' onclick='location.href=\"" . $this->url('news', array('action'=>'read', 'id'=>$news->id)) . "\"' >";
 echo $this->form()->closeTag();

@@ -6,19 +6,45 @@ $ccnt = count($coms);
 ?>
 <h1><?php echo $this->escapeHtml($title); ?></h1>
 <span style="color: gray; font-size: smaller">Добавлена: <?php echo $news->dt; ?></span>
-<input type=button value='Назад' style="position: fixed; left: 5px; top: 55px;" onclick='window.history.back();'>
+<input type=button value='Назад' style="position: fixed; left: 5px; top: 55px;" onclick='location.href="<?php echo $this->url('news') ?>"'> 
 <center><pre style="display: inline-block; width: 95%; background-color: #FEFFD9; text-align: justify; font-size: 12pt; padding: 10px; border: 2px solid gold; margin-top: 20px"><?php echo $this->escapeHtml($news->text); ?></pre></center>
 
-<h2>Комментарии к новости <?php echo ($cnt)?"($ccnt)":"отсутствуют" ?></h2>
+<h2>Комментарии к новости <?php echo ($ccnt)?"($ccnt)":"отсутствуют" ?></h2>
 <?php
 $addcoms = '<a href="' . $this->url('news', array('action'=>'cadd', 'id'=>$news->id)) . '">Добавить комментарий к новости</a>';
 echo $addcoms;
 if( $ccnt ){
-    foreach($coms as $id => $val){
-    
+?>
+
+<table class="table">
+<colgroup><col align=right><col span=1><col align=center></colgroup>
+
+<?php foreach($coms as $val){
+    if( $val->pict ){
+        //echo 'dgfhgsdjfgsd' . $val->id . ' ' . getcwd();
+        $fl = fopen('public\img\pict' . $val->id . '.png', 'w+b');
+        fwrite($fl, $val->pict);
+        fclose($fl);
     }
+?>
+
+<tr>
+
+    <td><span style="font-weight: bold; font-size: 10pt;"><?php echo $this->escapeHtml($val->name) ?></span><br><span style="font-weight: bold; font-size: smaller; color: gray;"><?php echo $this->escapeHtml($val->dt) ?></span><?php if( $val->pict ) echo "<br><img src='/img/pict".$val->id.".png'>"?></td>
+    <td><pre style="font-size: 11pt;"><?php echo $this->escapeHtml($val->text) ?></pre></td>
+    <td>
+        <a href="<?php echo $this->url('news',
+            array('action'=>'cedit', 'id' => $val->nid, 'cid' => $val->id));?>">Изменить</a>
+        <a href="<?php echo $this->url('news',
+            array('action'=>'cdelete', 'id' => $val->nid, 'cid' => $val->id));?>">Удалить</a>
+        <?php echo ($val->status==0)?"<br><span style='color: red';>Не доступен для просмотра</span>":""; ?>
+    </td>
+</tr>
+   
+<?php } ?>
+</table>
+
+<?php
     echo $addcoms;
 }
-
-?>
 

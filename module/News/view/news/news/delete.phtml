@@ -17,6 +17,7 @@ $url = $this->url('news', array(
 <div>
     <input type="hidden" name="id" value="<?php echo (int) $news->id; ?>">
     <input type="submit" name="del" value="Да">
-    <input type="button" value="Нет" onclick='window.history.back();'>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <input type=button value='Нет' onclick='location.href="<?php echo $this->url('news') ?>"'>
 </div>
 </form>

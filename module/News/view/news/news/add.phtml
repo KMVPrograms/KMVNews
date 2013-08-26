@@ -15,5 +15,5 @@ echo $this->formRow($form->get('title')) . "<br>";
 echo "<LABEL>Текст новости:</LABEL><br>";
 echo $this->formRow($form->get('text')) . "<br>";
 echo $this->formSubmit($form->get('submit'));
-echo "<input type=button value='Назад' style='margin-left:50px' onclick='window.history.back();' >";
+echo "<input type=button value='Назад' style='margin-left:50px' onclick='location.href=\"" . $this->url('news') . "\"' >";
 echo $this->form()->closeTag();

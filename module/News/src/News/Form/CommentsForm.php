@@ -9,15 +9,19 @@ class CommentsForm extends Form
     {
         parent::__construct('news');
         $this->setAttribute('method', 'post');
+        $this->setAttribute('enctype', 'multipart/form-data');
         $this->add(array(
-            'name' => 'id',
-            'type' => 'Hidden',
-        ));
-        $this->add(array(
-            'name' => 'title',
+            'name' => 'name',
             'type' => 'Text',
             'attributes' => array(
-                'size' => '100',
+                'size' => '50',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'email',
+            'type' => 'text',
+            'attributes' => array(
+                'size' => '50',
             ),
         ));
         $this->add(array(
@@ -27,6 +31,21 @@ class CommentsForm extends Form
                 'cols' => '150',
                 'rows' => '10',
             ),
+        ));
+        $this->add(array(
+            'name' => 'pict',
+            'type' => 'File',
+            'attributes' => array(
+                'size' => '60',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'ispict',
+            'type' => 'Hidden',
+        ));
+        $this->add(array(
+            'name' => 'status',
+            'type' => 'CheckBox',
         ));
         $this->add(array(
             'name' => 'submit',

@@ -1,0 +1,23 @@
+<?php
+// module/Album/view/album/album/delete.phtml:
+
+$title = 'Удалить коментарий к новости';
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+
+<p>Вы уверены, что хотите удалить комментарий к новости '<?php echo $this->escapeHtml($news->title); ?>', написанный пользователем '<?php echo $this->escapeHtml($coms->name); ?>' <?php echo $this->escapeHtml($coms->dt); ?>?</p>
+<?php
+$url = $this->url('news', array(
+    'action' => 'cdelete',
+    'id'     => $coms->nid,
+    'cid'     => $coms->id,
+));
+?>
+<form action="<?php echo $url; ?>" method="post">
+<div>
+    <input type="submit" name="del" value="Да">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <input type=button value='Нет' onclick='location.href="<?php echo $this->url('news', array('action' => 'read', 'id' => $coms->nid)) ?>"'>
+</div>
+</form>
