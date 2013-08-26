@@ -48,8 +48,6 @@ class Comments implements InputFilterAwareInterface
             $inputFilter = new InputFilter();
             $factory     = new InputFactory();
 
-            $reg = (new Regex('#^[a-z0-9]+$#i'));
-            $reg->setMessage('Должно содержать только цифры и буквы латинского алфавита');
             $inputFilter->add($factory->createInput(array(
                 'name'     => 'name',
                 'required' => true,
@@ -57,7 +55,15 @@ class Comments implements InputFilterAwareInterface
                     array('name' => 'StringTrim'),
                 ),
                 'validators' => array(
-                    $reg
+                    array(
+                        'name' => 'regex',
+                        'options' => array(
+                            'pattern' => '#^[a-z0-9]+$#i',
+                            'messages' => array(
+                                'regexNotMatch' => 'Должно содержать только цифры и буквы латинского алфавита'
+                            )
+                        )
+                    )
                 ),
             )));
 

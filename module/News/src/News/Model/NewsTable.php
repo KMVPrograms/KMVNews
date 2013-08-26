@@ -51,6 +51,7 @@ class NewsTable
         if( strlen($like_str) ){
             $sel->where(array($wh));
         }
+        //if( $GLOBALS['isAdmin' ) $select->order('status DESC');
         if( isset($_COOKIE['order']) ){
             $ord = (int)$_COOKIE['order'];
             if( $ord!=0 && abs($ord)<3 ){

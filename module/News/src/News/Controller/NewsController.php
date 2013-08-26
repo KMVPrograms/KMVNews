@@ -3,10 +3,12 @@ namespace News\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use News\Model\Comments;          // <-- Add this import
-use News\Model\News;          // <-- Add this import
-use News\Form\NewsForm;       // <-- Add this import
-use News\Form\CommentsForm;       // <-- Add this import
+use News\Model\Comments;
+use News\Model\News;
+use News\Form\NewsForm;
+use News\Form\CommentsForm;
+use News\Form\AdminForm;
+use Zend\Authentication\AuthenticationService;
 
 class NewsController extends AbstractActionController
 {
@@ -34,8 +36,8 @@ class NewsController extends AbstractActionController
     public function indexAction()
     {
         if( !isset($_COOKIE['spos']) ){
-            setcookie("spos", 0);
-            $_COOKIE['spos'] = 0;
+            setcookie("spos", -2);
+            $_COOKIE['spos'] = -2;
         }
         if( isset($_GET['order']) ){
             setcookie("order", $_GET['order']);
@@ -55,6 +57,7 @@ class NewsController extends AbstractActionController
 
     public function addAction()
     {
+        if( !$GLOBALS['isAdmin'] ) return $this->redirect()->toRoute('news');
         $form = new NewsForm();
         $form->get('submit')->setValue('Добавить');
 
@@ -74,8 +77,9 @@ class NewsController extends AbstractActionController
         return array('form' => $form);
     }
 
-    public function editAction()
+    public function editAction() 
     {
+        if( !$GLOBALS['isAdmin'] ) return $this->redirect()->toRoute('news');
         $id = (int) $this->params()->fromRoute('id', 0);
         if (!$id) {
             return $this->redirect()->toRoute('news', array(
@@ -116,6 +120,7 @@ class NewsController extends AbstractActionController
 
     public function deleteAction()
     {
+        if( !$GLOBALS['isAdmin'] ) return $this->redirect()->toRoute('news');
         $id = (int) $this->params()->fromRoute('id', 0);
         if (!$id) {
             return $this->redirect()->toRoute('news');
@@ -140,8 +145,8 @@ class NewsController extends AbstractActionController
     }
     
     private function defBehavior(){
-        $GLOBALS['isAdmin'] = true;
         $id = (int) $this->params()->fromRoute('id', 0);
+        if( $id<0 ){ $mass['moderate']=true; $id = -$id; }
         if (!$id) {                                 
             return $this->redirect()->toRoute('news');
         }
@@ -153,9 +158,8 @@ class NewsController extends AbstractActionController
             return $this->redirect()->toRoute('news');
         }
 
-        return array(
-            "news" => $news,
-        );
+        $mass['news'] = $news;
+        return $mass;
     }
     
     public function readAction()
@@ -179,15 +183,23 @@ class NewsController extends AbstractActionController
         if ($request->isPost()) {
             $coms = new Comments();
             $form->setInputFilter($coms->getInputFilter());
-            $form->setData($request->getPost());
-
+            $post = array_merge_recursive(
+                $request->getPost()->toArray(),
+                $request->getFiles()->toArray()
+            );
+            $form->setData($post);
+            
             if ($form->isValid()) {
+                print_r($request->getFiles()->toArray());
                 $coms->exchangeArray($form->getData());
+                echo $coms->pict;
                 if( !$GLOBALS['isAdmin'] ) $coms->status = 0;
                 $this->getCommentsTable()->saveComments($coms, 0, $mass['news']->id);
 
+                //echo $this->_helper->url('news', array('action' => 'read', 'id' => $mass['news']->id));
                 return $this->redirect()->toRoute('news', array('action' => 'read', 'id' => $mass['news']->id));
             }   
+            $coms->id = $id;
         }
 
         $mass['form'] = $form;
@@ -196,6 +208,7 @@ class NewsController extends AbstractActionController
 
     public function ceditAction()
     {
+        if( !$GLOBALS['isAdmin'] ) return $this->redirect()->toRoute('news');
         $mass = $this->defBehavior();
         if( !is_array($mass) ) return $mass;
 
@@ -211,17 +224,7 @@ class NewsController extends AbstractActionController
         }
 
         $form = new CommentsForm();
-        if( $coms->pict ){
-            $fl = fopen('public\img\pict0.png', 'w+b');
-            fwrite($fl, $coms->pict);
-            fclose($fl);
-            $form->get('ispict')->setValue("1");
-                //echo "test";
-                //header("Content-type: image/png", false); 
-                //print $coms->pict;
-                //readfile()
-                //exit;
-        }
+        if( $coms->pict ) $form->get('ispict')->setValue("1");
         $coms->pict = null;
 
         $form->bind($coms);
@@ -253,6 +256,7 @@ class NewsController extends AbstractActionController
     
     public function cdeleteAction()
     {
+        if( !$GLOBALS['isAdmin'] ) return $this->redirect()->toRoute('news');
         $mass = $this->defBehavior();
         if( !is_array($mass) ) return $mass;
 
@@ -281,4 +285,39 @@ class NewsController extends AbstractActionController
         $mass['coms'] = $coms;
         return $mass;
     }
+    
+    public function adminAction(){
+        $form = new AdminForm();
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $form->setData($request->getPost());
+
+            if ($form->isValid()) {
+                $auth = new AuthenticationService();
+                if ($auth->hasIdentity()) $auth->clearIdentity();
+                $GLOBALS['isAdmin'] = false;
+
+                // Set up the authentication adapter
+                $authAdapter = new \News\Auth\NewsAdapter($form->get('username')->getValue(), $form->get('password')->getValue());
+
+                // Attempt authentication, saving the result
+                $result = $auth->authenticate($authAdapter);
+
+                if (!$result->isValid()) {
+                    $mass['failed'] = 1;
+                } else {
+                    return $this->redirect()->toRoute('news');
+                }
+            }
+        }
+        $mass['form'] = $form;
+        return $mass;;
+   }
+   
+   public function logoutAction(){
+        $auth = new AuthenticationService();
+        if ($auth->hasIdentity()) $auth->clearIdentity();
+        return $this->redirect()->toRoute('news');
+   }
 }

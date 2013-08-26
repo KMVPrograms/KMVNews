@@ -1,7 +1,8 @@
 <?php
-
 $title = "Просмотр новости '" . $news->title . "'";
 $this->headTitle($title);
+global $isAdmin;
+//echo 'fsdfsdfsdfsd='.$_REQUEST['ttt'];
 $ccnt = count($coms);
 ?>
 <h1><?php echo $this->escapeHtml($title); ?></h1>
@@ -11,6 +12,7 @@ $ccnt = count($coms);
 
 <h2>Комментарии к новости <?php echo ($ccnt)?"($ccnt)":"отсутствуют" ?></h2>
 <?php
+if( $moderate ) echo "<span style='color: red; font-style: italic; font-size: larger'>Ваш комментарий был отправлен на модерацию администрации. После его проверки он станет видимый для всех.</span><br>";
 $addcoms = '<a href="' . $this->url('news', array('action'=>'cadd', 'id'=>$news->id)) . '">Добавить комментарий к новости</a>';
 echo $addcoms;
 if( $ccnt ){
@@ -19,19 +21,12 @@ if( $ccnt ){
 <table class="table">
 <colgroup><col align=right><col span=1><col align=center></colgroup>
 
-<?php foreach($coms as $val){
-    if( $val->pict ){
-        //echo 'dgfhgsdjfgsd' . $val->id . ' ' . getcwd();
-        $fl = fopen('public\img\pict' . $val->id . '.png', 'w+b');
-        fwrite($fl, $val->pict);
-        fclose($fl);
-    }
-?>
+<?php foreach($coms as $val){ ?>
 
 <tr>
-
-    <td><span style="font-weight: bold; font-size: 10pt;"><?php echo $this->escapeHtml($val->name) ?></span><br><span style="font-weight: bold; font-size: smaller; color: gray;"><?php echo $this->escapeHtml($val->dt) ?></span><?php if( $val->pict ) echo "<br><img src='/img/pict".$val->id.".png'>"?></td>
+    <td><span style="font-weight: bold; font-size: 10pt;"><?php echo $this->escapeHtml($val->name) ?></span><br><span style="font-weight: bold; font-size: smaller; color: gray;"><?php echo $this->escapeHtml($val->dt) ?></span><?php if( $val->pict ) echo "<br><img src='/lpict.php?p=".$val->id."'>"?></td>
     <td><pre style="font-size: 11pt;"><?php echo $this->escapeHtml($val->text) ?></pre></td>
+<?php if( $isAdmin ){ ?>
     <td>
         <a href="<?php echo $this->url('news',
             array('action'=>'cedit', 'id' => $val->nid, 'cid' => $val->id));?>">Изменить</a>
@@ -39,6 +34,7 @@ if( $ccnt ){
             array('action'=>'cdelete', 'id' => $val->nid, 'cid' => $val->id));?>">Удалить</a>
         <?php echo ($val->status==0)?"<br><span style='color: red';>Не доступен для просмотра</span>":""; ?>
     </td>
+<?php } ?>    
 </tr>
    
 <?php } ?>

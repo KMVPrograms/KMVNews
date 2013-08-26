@@ -23,8 +23,4 @@ return array(
     //    'cache_dir' =>  './data/cache',
     //    ...
     // )
-    'db' => array(
-        'username' => 'username',
-        'password' => 'password',
-    ),
 );

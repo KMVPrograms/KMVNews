@@ -1,6 +1,7 @@
 <?php
 $title = 'KMV Сайт Новостей' . (strlen($_COOKIE['search'])?" (результаты поиска)":"");
 $this->headTitle($title);
+global $isAdmin;
 $pagecnt = $GLOBALS['pagecount'];
 ?>
 <style>
@@ -25,9 +26,11 @@ $pagecnt = $GLOBALS['pagecount'];
     }
 </style>
 <h1><?php echo $this->escapeHtml($title); ?></h1>
+<?php if( $isAdmin ){ ?>
 <p>
     <a href="<?php echo $this->url('news', array('action'=>'add'));?>">Добавить новость</a>
 </p>
+<?php } ?>    
 
 <script>
 function schg(el){ location.href = "<?php echo $this->url('news')?>?spos="+el.selectedIndex; }
@@ -42,7 +45,7 @@ function scrt(el, cnt){
 }
 </script>
 
-<form id=sform action="<?php echo $this->url('news')?>?spos=0" method="POST" style="position: fixed; right: 30px; top: 15px; z-index: 2000;">
+<form id=sform action="<?php echo $this->url('news')?>?spos=0" method="POST" style="position: fixed; right: <?php echo $isAdmin?"150":"30"; ?>px; top: 15px; z-index: 2000;">
     <input type=text size=30 name="search" value="<?php echo htmlspecialchars($_COOKIE['search']) ?>" placeholder="Введите для поиска" title="Поиск проводится по заголовкам и текстам новостей"><input type=submit value="Поиск">
     <?php if( strlen($_COOKIE['search']) ){ ?>
     <input type=button value="Сброс" onclick="sform.children[0].value=''; sform.submit();" >
@@ -56,20 +59,24 @@ function scrt(el, cnt){
     <th class="tth<?php echo (abs($_COOKIE['order'])==1)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($_COOKIE['order']==1)?-1:(($_COOKIE['order']==-1)?0:1));?>'">Заголовок</th>
     <th class="tth<?php echo (abs($_COOKIE['order'])==2)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($_COOKIE['order']==2)?-2:(($_COOKIE['order']==-2)?0:2));?>'">Дата</th>
     <th>Короткий текст</th>
+<?php if( $isAdmin ){ ?>
     <th>&nbsp;</th>
+<?php } ?>    
 </tr>
 <?php foreach ($news as $val) : ?>
-<tr onclick="if((event.target || event.srcElement).tagName=='TD') location.href='<?php echo $this->url('news', array('action'=>'read', 'id' => $val->id)) ?>'">
+<tr onclick="<?php if($isAdmin){ ?>if((event.target || event.srcElement).tagName=='TD') <?php } ?>location.href='<?php echo $this->url('news', array('action'=>'read', 'id' => $val->id)) ?>'">
     <td><?php echo $this->escapeHtml($val->title);?></td>
     <td><?php echo $this->escapeHtml($val->dt);?></td>
     <td><?php preg_match('#([\p{Z}\r]*[^\r\p{Z}]*){0,30}#m', $val->text, $matches);
-              echo $this->escapeHtml($matches[0]);?></td>
+              echo $this->escapeHtml($matches[0] . "...");?></td>
+<?php if( $isAdmin ){ ?>
     <td>
         <a href="<?php echo $this->url('news',
             array('action'=>'edit', 'id' => $val->id));?>">Изменить</a>
         <a href="<?php echo $this->url('news',
             array('action'=>'delete', 'id' => $val->id));?>">Удалить</a>
     </td>
+<?php } ?>    
 </tr>
 <?php endforeach; ?>
 </table>

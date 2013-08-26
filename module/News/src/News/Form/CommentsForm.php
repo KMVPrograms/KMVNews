@@ -43,10 +43,12 @@ class CommentsForm extends Form
             'name' => 'ispict',
             'type' => 'Hidden',
         ));
-        $this->add(array(
-            'name' => 'status',
-            'type' => 'CheckBox',
-        ));
+        if( $GLOBALS['isAdmin'] ){
+            $this->add(array(
+                'name' => 'status',
+                'type' => 'CheckBox',
+            ));
+        }
         $this->add(array(
             'name' => 'submit',
             'type' => 'Submit',

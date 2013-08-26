@@ -69,10 +69,16 @@ KMVNews
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
         text LONGTEXT,
-        pict BLOB,
-        nid INTEGER,
+        pict MEDIUMBLOB,
+        nid INTEGER NOT NULL,
         status INTEGER(1),
         FOREIGN KEY(nid) REFERENCES news (id) ON DELETE CASCADE
     ) CHARACTER SET utf8;
+
+4)
+==
+Авторизация администратора 
+--------------------------
+В файле /config/autoload/admin.local.php прописываются логин и пароль администратора сайта.
 
 Всё. Можно приступать к запуску сайта.

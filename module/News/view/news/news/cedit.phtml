@@ -20,7 +20,7 @@ echo "<LABEL>Имя пользователя:</LABEL><br>" . $this->formRow($for
 echo "<LABEL>Почта:</LABEL><br>" . $this->formRow($form->get('email')) . "<br>";
 echo "<LABEL>Изображение:</LABEL><br>" . $this->formRow($form->get('pict'));
 if( $form->get('ispict')->getValue()==1 ){
-    echo "<img id=picture src='/img/pict0.png'>";
+    echo "<img id=picture src='/lpict.php?p=".$coms->id."'>";
 }
 ?>
  <input type=button id=chbid onclick="news.pict.value=''; this.disabled = true; if(news.picture) news.picture.style.display='none'; news.pict.style.display='inline'; news.ispict.value='0'" value="Очистить"><br>

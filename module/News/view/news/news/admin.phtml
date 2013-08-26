@@ -1,0 +1,22 @@
+<?php
+$title = 'Вход в режиме администратора';
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+
+<?php
+$form = $this->form;
+$form->setAttribute('action', $this->url(
+    'news',
+    array(
+        'action' => 'admin'
+    )
+));
+$form->prepare();
+
+if( $failed==1 ) echo "<span style='color: red;'>Ошибка при авторизации</span><br>"; 
+echo $this->form()->openTag($form);
+echo "<LABEL>Имя пользователя:</LABEL><br>" . $this->formRow($form->get('username')) . "<br>";
+echo "<LABEL>Пароль:</LABEL><br>" . $this->formRow($form->get('password')) . "<br><br>";
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();

@@ -22,6 +22,7 @@ class CommentsTable
         $sel->columns(array('id', 'dt' => new Expression('DATE_FORMAT(dt, "%d.%m.%Y %H:%i:%s")'), 'name', 'email', 'text', 'pict', 'nid', 'status'), false);
         if( !$GLOBALS['isAdmin'] ) $sel->where(array('status' => 1));
         $sel->where(array('nid' => $nid));
+        //if( $GLOBALS['isAdmin'] ) $sel->order('status');
         $sel->order('comments.dt DESC');
         //echo $sel->getSqlString();
         $resultSet = $this->tableGateway->selectWith($sel);
@@ -45,20 +46,42 @@ class CommentsTable
         return $row;
     }
 
+    public function adoptPict($pict){
+        $filecontent = file_get_contents($pict['tmp_name']);
+        echo "mystrlen=" . strlen($filecontent);
+        $im = imagecreatefromstring($filecontent);
+        if( !$im ) return null;
+        $wth = imagesx($im); $hgt = imagesy($im);
+        echo "wth=$wth hgt=$hgt";
+        if( $wth<=320 && $hgt<=240 ){
+            imagedestroy($im);
+            return $filecontent;
+        }
+        $k = ($wth/$hgt<320/240)?(240/$hgt):(320/$wth);
+        $wth2 = $wth*$k; $hgt2 = $hgt*$k;
+        echo "k=$k wth2=$wth2 hgt2=$hgt2";
+        $im2 = imagecreatetruecolor($wth2, $hgt2);
+        imagecopyresampled($im2, $im, 0, 0, 0, 0, $wth2, $hgt2, $wth, $hgt);
+        $ret = null;
+        if( imagegif($im2, "data/img/tmp.gif") ){
+            $ret = file_get_contents("data/img/tmp.gif");
+        }
+        imagedestroy($im);
+        imagedestroy($im2);
+        return $ret;
+    }
+
     public function saveComments(Comments $Comments, $id=0, $nid=0, $ispict=0)
     {
         $data = array(
             'name'  => $Comments->name,
             'email'  => $Comments->email,
             'text'  => $Comments->text,
-            'pict'  => $Comments->pict,
             'status' => $Comments->status,
         );
 
-        if( $data['pict']['error']==0 ){
-            $filecontent = file_get_contents($data['pict']['tmp_name']);
-            //echo "mystrlen=" . strlen($filecontent);
-            $data['pict'] = $filecontent;
+        if( $Comments->pict['error']==0 ){
+            $data['pict'] = $this->adoptPict($Comments->pict);
         }elseif ( !$ispict ) $data['pict'] = null;
         
         if ($id == 0) {
