@@ -12,7 +12,8 @@ class News implements InputFilterAwareInterface
     public $id;
     public $title;
     public $dt;
-    public $text;
+    public $text;                                              
+    public $ccnt; //количество комментариев требующих модерации
     protected $inputFilter;
 
     public function exchangeArray($data)
@@ -21,6 +22,7 @@ class News implements InputFilterAwareInterface
         $this->title = (!empty($data['title'])) ? $data['title'] : null;
         $this->dt  = (!empty($data['dt'])) ? $data['dt'] : new Expression('NOW()');
         $this->text  = (!empty($data['text'])) ? $data['text'] : null;
+        $this->ccnt  = (!empty($data['ccnt'])) ? $data['ccnt'] : 0;
     }
     
     public function getArrayCopy()

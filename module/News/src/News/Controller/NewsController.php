@@ -35,16 +35,17 @@ class NewsController extends AbstractActionController
 
     public function indexAction()
     {
-        if( !isset($_COOKIE['spos']) ){
-            setcookie("spos", -2);
-            $_COOKIE['spos'] = -2;
+        if( !isset($_COOKIE['spos']) || $_COOKIE['spos']<0 ){
+            setcookie("spos", 0, 0, '/');
+            $_COOKIE['spos'] = 0;
         }
         if( isset($_GET['order']) ){
-            setcookie("order", $_GET['order']);
+            setcookie("order", $_GET['order'], 0, '/');
             $_COOKIE['order'] = $_GET['order'];
-        }
+        }elseif( !isset($_COOKIE['order']) ) $_COOKIE['order'] = -2;
+        
         if( isset($_POST['search']) ){
-            setcookie("search", $_POST['search']);
+            setcookie("search", $_POST['search'], 0, '/');
             $_COOKIE['search'] = $_POST['search'];
         }
 	    //return new ViewModel(array(
@@ -168,6 +169,7 @@ class NewsController extends AbstractActionController
         if( !is_array($mass) ) return $mass;
         
         $mass["coms"] = $this->getCommentsTable()->fetchAll($mass['news']->id);
+        $mass["moderate"] = ($this->params()->fromRoute('cid', 1)==0);
         return $mass;
     }
 
@@ -196,8 +198,9 @@ class NewsController extends AbstractActionController
                 if( !$GLOBALS['isAdmin'] ) $coms->status = 0;
                 $this->getCommentsTable()->saveComments($coms, 0, $mass['news']->id);
 
-                //echo $this->_helper->url('news', array('action' => 'read', 'id' => $mass['news']->id));
-                return $this->redirect()->toRoute('news', array('action' => 'read', 'id' => $mass['news']->id));
+                $arr = array('action' => 'read', 'id' => $mass['news']->id);
+                if( !$GLOBALS['isAdmin'] ) $arr['cid'] = 0;
+                return $this->redirect()->toRoute('news', $arr);
             }   
         }
 

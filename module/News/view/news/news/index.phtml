@@ -1,5 +1,8 @@
 <?php
-$title = 'KMV Сайт Новостей' . (strlen($_COOKIE['search'])?" (результаты поиска)":"");
+$csearch = isset($_COOKIE['search'])?$_COOKIE['search']:"";
+$corder = isset($_COOKIE['order'])?(int)$_COOKIE['order']:-2;
+$cspos = isset($_COOKIE['spos'])?(int)$_COOKIE['spos']:0;
+$title = 'KMV Сайт Новостей' . (strlen($csearch)?" (результаты поиска)":"");
 $this->headTitle($title);
 global $isAdmin;
 $pagecnt = $GLOBALS['pagecount'];
@@ -8,7 +11,7 @@ $pagecnt = $GLOBALS['pagecount'];
     .ttho{
         <?php
         if( isset($_COOKIE['order']) ){
-            echo "background: url(/img/order_" . (($_COOKIE['order']<0)?"down":"up") . ".png) center right no-repeat lightyellow;";
+            echo "background: url(/img/order_" . (($corder<0)?"down":"up") . ".png) center right no-repeat lightyellow;";
         }
         ?>
     }
@@ -41,13 +44,13 @@ function scrt(el, cnt){
         el.appendChild(ch);
         ch.innerHTML = (i+1);
     }
-    el.selectedIndex = <?php echo $_COOKIE['spos'] ?>;
+    el.selectedIndex = <?php echo $cspos ?>;
 }
 </script>
 
 <form id=sform action="<?php echo $this->url('news')?>?spos=0" method="POST" style="position: fixed; right: <?php echo $isAdmin?"150":"30"; ?>px; top: 15px; z-index: 2000;">
-    <input type=text size=30 name="search" value="<?php echo htmlspecialchars($_COOKIE['search']) ?>" placeholder="Введите для поиска" title="Поиск проводится по заголовкам и текстам новостей"><input type=submit value="Поиск">
-    <?php if( strlen($_COOKIE['search']) ){ ?>
+    <input type=text size=30 name="search" value="<?php echo htmlspecialchars($csearch) ?>" placeholder="Введите для поиска" title="Поиск проводится по заголовкам и текстам новостей"><input type=submit value="Поиск">
+    <?php if( strlen($csearch) ){ ?>
     <input type=button value="Сброс" onclick="sform.children[0].value=''; sform.submit();" >
     <?php } ?>
 </form>
@@ -56,13 +59,13 @@ function scrt(el, cnt){
 
 <table class="table">
 <tr>
-    <th class="tth<?php echo (abs($_COOKIE['order'])==1)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($_COOKIE['order']==1)?-1:(($_COOKIE['order']==-1)?0:1));?>'">Заголовок</th>
-    <th class="tth<?php echo (abs($_COOKIE['order'])==2)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($_COOKIE['order']==2)?-2:(($_COOKIE['order']==-2)?0:2));?>'">Дата</th>
+    <th class="tth<?php echo (abs($corder)==1)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($corder==1)?-1:(($corder==-1)?0:1));?>'">Заголовок</th>
+    <th class="tth<?php echo (abs($corder)==2)?"o":"" ?>" onclick="location.href='<?php echo $this->url('news') . "?order=" . (($corder==2)?-2:(($corder==-2)?0:2));?>'">Дата</th>
     <th>Короткий текст</th>
 <?php if( $isAdmin ){ ?>
     <th>&nbsp;</th>
 <?php } ?>    
-</tr>
+</tr> 
 <?php foreach ($news as $val) : ?>
 <tr onclick="<?php if($isAdmin){ ?>if((event.target || event.srcElement).tagName=='TD') <?php } ?>location.href='<?php echo $this->url('news', array('action'=>'read', 'id' => $val->id)) ?>'">
     <td><?php echo $this->escapeHtml($val->title);?></td>
@@ -70,11 +73,17 @@ function scrt(el, cnt){
     <td><?php preg_match('#([\p{Z}\r]*[^\r\p{Z}]*){0,30}#m', $val->text, $matches);
               echo $this->escapeHtml($matches[0] . "...");?></td>
 <?php if( $isAdmin ){ ?>
-    <td>
+    <td align=center>
         <a href="<?php echo $this->url('news',
-            array('action'=>'edit', 'id' => $val->id));?>">Изменить</a>
+            array('action'=>'edit', 'id' => $val->id));?>">Изменить</a><br>
         <a href="<?php echo $this->url('news',
             array('action'=>'delete', 'id' => $val->id));?>">Удалить</a>
+        <?php if( $val->ccnt>0 ){
+            $comments = "комментари" . (($val->ccnt==1)?"й":(($val->ccnt%10>1 && $val->ccnt%10<5)?"я":"ев"));
+            $need = "нужда" . (($val->ccnt==1)?"ется":"ются");
+        ?>                    
+         <br><span style="color: red" title="<?php echo $val->ccnt . " $comments $need" ?> в модерации">(<?php echo $val->ccnt; ?>)</span>
+        <?php } ?>
     </td>
 <?php } ?>    
 </tr>

@@ -19,7 +19,7 @@ class NewsTable
     public function fetchAll()
     {
         $like_str = "";
-        if( strlen($_COOKIE['search']) ){
+        if( isset($_COOKIE['search']) && strlen($_COOKIE['search']) ){
             $like_str = '%' . preg_replace(array('#%#', '#\s#'), array('\%', '%'), $_COOKIE['search']) . '%';
         }
         
@@ -42,16 +42,16 @@ class NewsTable
             $ps = $_GET['spos'];
             if( $ps>=$GLOBALS['pagecount'] ) $ps = $GLOBALS['pagecount']-1;
             if( $ps<0 ) $ps=0;
-            setcookie("spos", $ps);
+            setcookie("spos", $ps, 0, '/');
             $_COOKIE['spos'] = $ps;
         }
 
         $sel = $this->tableGateway->getSql()->select();
-        $sel->columns(array('id', 'title', 'dt' => new Expression('DATE_FORMAT(dt, "%d.%m.%Y %H:%i:%s")'), 'text'), false);
+        $sel->columns(array('id', 'title', 'dt' => new Expression('DATE_FORMAT(dt, "%d.%m.%Y %H:%i:%s")'), 'text', 'ccnt' => new Expression('(select count(*) from comments where nid=news.id && status=0)')), false);
         if( strlen($like_str) ){
             $sel->where(array($wh));
         }
-        //if( $GLOBALS['isAdmin' ) $select->order('status DESC');
+        if( $GLOBALS['isAdmin'] ) $sel->order('ccnt DESC');
         if( isset($_COOKIE['order']) ){
             $ord = (int)$_COOKIE['order'];
             if( $ord!=0 && abs($ord)<3 ){

@@ -15,7 +15,7 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
 require 'init_autoloader.php';
 
 if( getenv('APPLICATION_ENV') == 'development' ){
-	error_reporting(E_ERROR);
+	error_reporting(E_ERROR|E_PARSE|E_NOTICE|E_ALL);
 	ini_set('display_errors', '1');
 }
 

@@ -19,6 +19,7 @@ echo $this->formHidden($form->get('ispict'));
 echo "<LABEL>Имя пользователя:</LABEL><br>" . $this->formRow($form->get('name')) . "<br>";
 echo "<LABEL>Почта:</LABEL><br>" . $this->formRow($form->get('email')) . "<br>";
 echo "<LABEL>Изображение:</LABEL><br>" . $this->formRow($form->get('pict'));
+//print_r($this->basePath());
 if( $form->get('ispict')->getValue()==1 ){
     echo "<a id=picture data-lightbox='lb".$coms->id."' title='Изображение к комментарию' href='/lpict.php?p=".$coms->id."'><img src='/lpict.php?p=".$coms->id."'></a>";
 }
